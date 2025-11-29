@@ -7,6 +7,7 @@ import (
 
 	"github.com/zarazaex/zik/apps/server/internal/api"
 	"github.com/zarazaex/zik/apps/server/internal/config"
+	"github.com/zarazaex/zik/apps/server/internal/pkg/crypto"
 	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
 	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
 	"github.com/zarazaex/zik/apps/server/internal/service/ai"
@@ -33,16 +34,18 @@ func main() {
 		Msg("Configuration loaded")
 
 	// Initialize tokenizer
-	if err := utils.InitTokenizer(); err != nil {
+	tokenizer := utils.NewTokenizer()
+	if err := tokenizer.Init(); err != nil {
 		logger.Warn().Err(err).Msg("Failed to initialize tokenizer, token counting will be unavailable")
 	}
 
 	// Initialize services
 	authService := auth.NewService()
-	aiClient := ai.NewClient(cfg, authService)
+	sigGen := crypto.NewSignatureGenerator()
+	aiClient := ai.NewClient(cfg, authService, sigGen)
 
 	// Create router
-	router := api.NewRouter(cfg, aiClient)
+	router := api.NewRouter(cfg, aiClient, tokenizer)
 
 	// Print startup info
 	logger.Info().Msg("Available endpoints:")

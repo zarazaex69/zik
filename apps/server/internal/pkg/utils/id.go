@@ -4,7 +4,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// GenerateID generates a UUID v4 without dashes
+// GenerateID generates a UUID v4
 func GenerateID() string {
 	return uuid.New().String()
 }

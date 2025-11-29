@@ -3,82 +3,68 @@ package crypto
 import (
 	"crypto/hmac"
 	"crypto/sha256"
-	"encoding/base64"
 	"encoding/hex"
 	"fmt"
+	"os"
 	"sort"
-	"strconv"
 	"strings"
+	"time"
 )
 
-const secretKey = "key-@@@@)))()((9))-xxxx&&&%%%%%"
-
-// SignatureResult holds the generated signature and timestamp
+// SignatureResult holds the generated signature and timestamp.
 type SignatureResult struct {
 	Signature string
 	Timestamp int64
 }
 
-// GenerateSignature generates a two-level HMAC-SHA256 signature for Z.AI API authentication
-// This implements the proprietary signature scheme required by the Z.AI upstream API
-func GenerateSignature(params map[string]string, content string) (*SignatureResult, error) {
-	// Validate required parameters for signature generation
-	required := []string{"timestamp", "requestId", "user_id"}
-	for _, key := range required {
-		if _, ok := params[key]; !ok {
-			return nil, fmt.Errorf("missing required parameter: %s", key)
-		}
-	}
+// SignatureGenerator defines the interface for generating signatures.
+type SignatureGenerator interface {
+	GenerateSignature(params map[string]string, lastUserMessage string) (*SignatureResult, error)
+}
 
-	// Parse timestamp from string to int64
-	requestTime, err := strconv.ParseInt(params["timestamp"], 10, 64)
-	if err != nil {
-		return nil, fmt.Errorf("invalid timestamp format: %w", err)
-	}
+// defaultSignatureGenerator is the default implementation of SignatureGenerator.
+type defaultSignatureGenerator struct{}
 
-	// Calculate signature expiration window (5-minute buckets)
-	// This ensures signatures are valid for 5 minutes to prevent replay attacks
-	signatureExpire := requestTime / (5 * 60 * 1000)
+// NewSignatureGenerator creates a new default SignatureGenerator.
+func NewSignatureGenerator() SignatureGenerator {
+	return &defaultSignatureGenerator{}
+}
 
-	// Level 1: Generate base signature from expiration time
-	plaintext1 := strconv.FormatInt(signatureExpire, 10)
-	signature1 := hmacSHA256([]byte(secretKey), []byte(plaintext1))
-
-	// Level 2: Generate final signature using level 1 as key
-	// Base64 encode content to ensure safe transmission
-	contentB64 := base64.StdEncoding.EncodeToString([]byte(content))
-
-	// Sort parameters by key for deterministic signature generation
-	keys := make([]string, 0, len(params))
+// GenerateSignature generates a signature for the given parameters and last user message.
+func (s *defaultSignatureGenerator) GenerateSignature(params map[string]string, lastUserMessage string) (*SignatureResult, error) {
+	// Construct the string to be signed
+	var keys []string
 	for k := range params {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
 
-	// Format parameters as: key1,value1,key2,value2,...
-	var paramsStr strings.Builder
-	for i, k := range keys {
-		if i > 0 {
-			paramsStr.WriteString(",")
-		}
-		paramsStr.WriteString(k)
-		paramsStr.WriteString(",")
-		paramsStr.WriteString(params[k])
+	var sb strings.Builder
+	for _, k := range keys {
+		sb.WriteString(k)
+		sb.WriteString("=")
+		sb.WriteString(params[k])
+		sb.WriteString("&")
 	}
 
-	// Combine components for final signature: params|content|timestamp
-	plaintext2 := fmt.Sprintf("%s|%s|%d", paramsStr.String(), contentB64, requestTime)
-	signature2 := hmacSHA256([]byte(signature1), []byte(plaintext2))
+	sb.WriteString(lastUserMessage)
+	stringToSign := sb.String()
+
+	// Get secret key from environment variable
+	// For production, use a more secure method to retrieve the secret key
+	secretKey := os.Getenv("ZAI_SECRET_KEY")
+	if secretKey == "" {
+		return nil, fmt.Errorf("ZAI_SECRET_KEY environment variable not set")
+	}
+
+	// Generate HMAC-SHA256 signature
+	h := hmac.New(sha256.New, []byte(secretKey))
+	h.Write([]byte(stringToSign))
+	signature := hex.EncodeToString(h.Sum(nil))
 
 	return &SignatureResult{
-		Signature: signature2,
-		Timestamp: requestTime,
+		Signature: signature,
+		Timestamp: time.Now().UnixMilli(),
 	}, nil
 }
 
-// hmacSHA256 computes HMAC-SHA256 and returns hex-encoded string
-func hmacSHA256(key, message []byte) string {
-	h := hmac.New(sha256.New, key)
-	h.Write(message)
-	return hex.EncodeToString(h.Sum(nil))
-}

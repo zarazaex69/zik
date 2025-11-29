@@ -1,7 +1,6 @@
 package ai
 
 import (
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -21,14 +20,16 @@ import (
 // Client handles communication with Z.AI API
 type Client struct {
 	cfg         *config.Config
-	authService *auth.Service
+	authService auth.AuthServicer
+	signatureGen crypto.SignatureGenerator // New field for dependency injection
 }
 
 // NewClient creates a new Z.AI API client
-func NewClient(cfg *config.Config, authSvc *auth.Service) *Client {
+func NewClient(cfg *config.Config, authSvc auth.AuthServicer, sigGen crypto.SignatureGenerator) *Client {
 	return &Client{
 		cfg:         cfg,
 		authService: authSvc,
+		signatureGen: sigGen, // Assign the injected signature generator
 	}
 }
 
@@ -54,14 +55,15 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 	headers["Content-Type"] = "application/json"
 	headers["Referer"] = fmt.Sprintf("%s//%s/c/%s", c.cfg.Upstream.Protocol, c.cfg.Upstream.Host, chatID)
 
-	// Prepare request body
-	requestBody := map[string]interface{}{
-		"model":    req.Model,
-		"messages": req.Messages,
-		"stream":   true,
-		"chat_id":  chatID,
-		"id":       utils.GenerateRequestID(),
+	// Prepare request body using FormatRequest
+	requestBody, err := FormatRequest(req, c.cfg)
+	if err != nil {
+		return nil, fmt.Errorf("failed to format request: %w", err)
 	}
+
+	// Add required fields
+	requestBody["chat_id"] = chatID
+	requestBody["id"] = utils.GenerateRequestID()
 
 	// Add signature for authenticated users
 	if user.ID != "" {
@@ -70,13 +72,13 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 		// Extract last user message for signature
 		lastUserMsg := extractLastUserMessage(req.Messages)
 
-		// Generate signature
+		// Generate signature using the injected dependency
 		sigParams := map[string]string{
 			"requestId": requestID,
 			"timestamp": fmt.Sprintf("%d", timestamp),
 			"user_id":   user.ID,
 		}
-		sigResult, err := crypto.GenerateSignature(sigParams, lastUserMsg)
+		sigResult, err := c.signatureGen.GenerateSignature(sigParams, lastUserMsg) // Use injected interface
 		if err != nil {
 			logger.Warn().Err(err).Msg("Failed to generate signature, continuing without it")
 		} else {
@@ -126,43 +128,6 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 	}
 
 	return resp, nil
-}
-
-// ParseSSEStream parses Server-Sent Events stream from Z.AI API
-func ParseSSEStream(resp *http.Response) <-chan map[string]interface{} {
-	ch := make(chan map[string]interface{})
-
-	go func() {
-		defer close(ch)
-		defer resp.Body.Close()
-
-		scanner := bufio.NewScanner(resp.Body)
-		for scanner.Scan() {
-			line := scanner.Text()
-
-			// Skip empty lines or non-data lines
-			if !strings.HasPrefix(line, "data: ") {
-				continue
-			}
-
-			// Extract JSON data
-			jsonData := line[6:] // Skip "data: " prefix
-
-			var data map[string]interface{}
-			if err := json.Unmarshal([]byte(jsonData), &data); err != nil {
-				logger.Debug().Err(err).Msg("Failed to parse SSE event")
-				continue
-			}
-
-			ch <- data
-		}
-
-		if err := scanner.Err(); err != nil {
-			logger.Error().Err(err).Msg("Error reading SSE stream")
-		}
-	}()
-
-	return ch
 }
 
 // extractLastUserMessage extracts the last user message content for signature

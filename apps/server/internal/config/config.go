@@ -79,7 +79,8 @@ func loadConfig(configPath string) (*Config, error) {
 	// Load .env file first (ignore error if not exists)
 	_ = godotenv.Load()
 
-	c := &Config{}
+	// Initialize with default configuration first
+	c := defaultConfig()
 
 	// Try to load from YAML file if provided
 	if configPath != "" {
@@ -87,12 +88,17 @@ func loadConfig(configPath string) (*Config, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to read config file: %w", err)
 		}
+		// Unmarshal YAML on top of default configuration
 		if err := yaml.Unmarshal(data, c); err != nil {
 			return nil, fmt.Errorf("failed to parse config file: %w", err)
 		}
+		// If a token is provided in the config file, anonymous access should be disabled.
+		if c.Upstream.Token != "" {
+			c.Upstream.Anonymous = false
+		}
 	} else {
-		// Use default configuration
-		c = defaultConfig()
+		// If no configPath provided, c is already set to defaultConfig(),
+		// so nothing else to do here.
 	}
 
 	// Override with environment variables

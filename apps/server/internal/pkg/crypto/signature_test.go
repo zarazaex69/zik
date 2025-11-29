@@ -1,117 +1,227 @@
 package crypto
 
 import (
+	"os"
+	"strings"
 	"testing"
 )
 
-func TestGenerateSignature(t *testing.T) {
-	tests := []struct {
-		name        string
-		params      map[string]string
-		content     string
-		wantErr     bool
-		errContains string
+func TestNewSignatureGenerator(t *testing.T) {
+	generator := NewSignatureGenerator()
+	if generator == nil {
+		t.Fatal("NewSignatureGenerator() returned nil")
+	}
+}
+
+func TestGenerateSignature_Success(t *testing.T) {
+	// Set up environment variable for testing
+	originalKey := os.Getenv("ZAI_SECRET_KEY")
+	defer func() {
+		if originalKey != "" {
+			os.Setenv("ZAI_SECRET_KEY", originalKey)
+		} else {
+			os.Unsetenv("ZAI_SECRET_KEY")
+		}
+	}()
+
+	testKey := "test-secret-key-12345"
+	os.Setenv("ZAI_SECRET_KEY", testKey)
+
+	generator := NewSignatureGenerator()
+
+	testCases := []struct {
+		name            string
+		params          map[string]string
+		lastUserMessage string
 	}{
 		{
-			name: "valid signature generation",
+			name: "basic parameters",
 			params: map[string]string{
-				"timestamp": "1732912800000",
-				"requestId": "test-request-id",
-				"user_id":   "test-user-id",
+				"model": "gpt-4",
+				"user":  "testuser",
 			},
-			content: "Hello, world!",
-			wantErr: false,
+			lastUserMessage: "Hello, AI!",
 		},
 		{
-			name: "missing timestamp",
-			params: map[string]string{
-				"requestId": "test-request-id",
-				"user_id":   "test-user-id",
-			},
-			content:     "Hello, world!",
-			wantErr:     true,
-			errContains: "missing required parameter: timestamp",
+			name:            "empty parameters",
+			params:          map[string]string{},
+			lastUserMessage: "Test message",
 		},
 		{
-			name: "missing requestId",
+			name: "multiple parameters",
 			params: map[string]string{
-				"timestamp": "1732912800000",
-				"user_id":   "test-user-id",
+				"a": "1",
+				"b": "2",
+				"c": "3",
+				"d": "4",
 			},
-			content:     "Hello, world!",
-			wantErr:     true,
-			errContains: "missing required parameter: requestId",
-		},
-		{
-			name: "missing user_id",
-			params: map[string]string{
-				"timestamp": "1732912800000",
-				"requestId": "test-request-id",
-			},
-			content:     "Hello, world!",
-			wantErr:     true,
-			errContains: "missing required parameter: user_id",
-		},
-		{
-			name: "invalid timestamp format",
-			params: map[string]string{
-				"timestamp": "invalid",
-				"requestId": "test-request-id",
-				"user_id":   "test-user-id",
-			},
-			content:     "Hello, world!",
-			wantErr:     true,
-			errContains: "invalid timestamp",
+			lastUserMessage: "Complex test",
 		},
 		{
 			name: "empty content",
 			params: map[string]string{
 				"timestamp": "1732912800000",
 				"requestId": "test-request-id",
-				"user_id":   "test-user-id",
 			},
-			content: "",
-			wantErr: false,
+			lastUserMessage: "",
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			result, err := GenerateSignature(tt.params, tt.content)
-
-			if tt.wantErr {
-				if err == nil {
-					t.Errorf("GenerateSignature() expected error but got nil")
-					return
-				}
-				if tt.errContains != "" && !contains(err.Error(), tt.errContains) {
-					t.Errorf("GenerateSignature() error = %v, want error containing %v", err, tt.errContains)
-				}
-				return
-			}
-
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := generator.GenerateSignature(tc.params, tc.lastUserMessage)
 			if err != nil {
-				t.Errorf("GenerateSignature() unexpected error = %v", err)
-				return
+				t.Fatalf("GenerateSignature() error = %v", err)
 			}
 
 			if result == nil {
-				t.Error("GenerateSignature() returned nil result")
-				return
+				t.Fatal("GenerateSignature() returned nil result")
 			}
 
 			if result.Signature == "" {
-				t.Error("GenerateSignature() returned empty signature")
+				t.Error("Signature should not be empty")
 			}
 
-			if result.Timestamp == 0 {
-				t.Error("GenerateSignature() returned zero timestamp")
+			if result.Timestamp <= 0 {
+				t.Error("Timestamp should be positive")
+			}
+
+			// Verify signature is deterministic
+			result2, err := generator.GenerateSignature(tc.params, tc.lastUserMessage)
+			if err != nil {
+				t.Fatalf("GenerateSignature() second call error = %v", err)
+			}
+
+			// Signatures should be valid hex strings (64 chars for SHA256)
+			if len(result.Signature) != 64 {
+				t.Errorf("Signature length = %d, want 64", len(result.Signature))
+			}
+
+			// Different timestamps but same params should produce same signature
+			if result.Signature != result2.Signature {
+				t.Error("Same parameters should produce same signature")
 			}
 		})
 	}
 }
 
+func TestGenerateSignature_MissingSecretKey(t *testing.T) {
+	// Ensure secret key is not set
+	originalKey := os.Getenv("ZAI_SECRET_KEY")
+	defer func() {
+		if originalKey != "" {
+			os.Setenv("ZAI_SECRET_KEY", originalKey)
+		}
+	}()
+
+	os.Unsetenv("ZAI_SECRET_KEY")
+
+	generator := NewSignatureGenerator()
+	params := map[string]string{"test": "value"}
+
+	_, err := generator.GenerateSignature(params, "test message")
+	if err == nil {
+		t.Error("Expected error when ZAI_SECRET_KEY is not set")
+	}
+
+	expectedError := "ZAI_SECRET_KEY environment variable not set"
+	if err.Error() != expectedError {
+		t.Errorf("Error message = %q, want %q", err.Error(), expectedError)
+	}
+}
+
+func TestGenerateSignature_ParameterOrdering(t *testing.T) {
+	// Set up environment variable
+	originalKey := os.Getenv("ZAI_SECRET_KEY")
+	defer func() {
+		if originalKey != "" {
+			os.Setenv("ZAI_SECRET_KEY", originalKey)
+		} else {
+			os.Unsetenv("ZAI_SECRET_KEY")
+		}
+	}()
+
+	os.Setenv("ZAI_SECRET_KEY", "test-key")
+
+	generator := NewSignatureGenerator()
+
+	// Parameters in different order should produce same signature
+	// because they are sorted internally
+	params1 := map[string]string{
+		"z": "last",
+		"a": "first",
+		"m": "middle",
+	}
+
+	params2 := map[string]string{
+		"a": "first",
+		"m": "middle",
+		"z": "last",
+	}
+
+	result1, err1 := generator.GenerateSignature(params1, "message")
+	if err1 != nil {
+		t.Fatalf("GenerateSignature() error = %v", err1)
+	}
+
+	result2, err2 := generator.GenerateSignature(params2, "message")
+	if err2 != nil {
+		t.Fatalf("GenerateSignature() error = %v", err2)
+	}
+
+	if result1.Signature != result2.Signature {
+		t.Error("Parameter ordering should not affect signature")
+	}
+}
+
+func TestGenerateSignature_DifferentInputs(t *testing.T) {
+	// Set up environment variable
+	originalKey := os.Getenv("ZAI_SECRET_KEY")
+	defer func() {
+		if originalKey != "" {
+			os.Setenv("ZAI_SECRET_KEY", originalKey)
+		} else {
+			os.Unsetenv("ZAI_SECRET_KEY")
+		}
+	}()
+
+	os.Setenv("ZAI_SECRET_KEY", "test-key")
+
+	generator := NewSignatureGenerator()
+
+	params := map[string]string{"key": "value"}
+
+	result1, _ := generator.GenerateSignature(params, "message1")
+	result2, _ := generator.GenerateSignature(params, "message2")
+
+	// Different messages should produce different signatures
+	if result1.Signature == result2.Signature {
+		t.Error("Different messages should produce different signatures")
+	}
+
+	params2 := map[string]string{"key": "different"}
+	result3, _ := generator.GenerateSignature(params2, "message1")
+
+	// Different parameters should produce different signatures
+	if result1.Signature == result3.Signature {
+		t.Error("Different parameters should produce different signatures")
+	}
+}
+
 func TestGenerateSignature_Deterministic(t *testing.T) {
+	originalKey := os.Getenv("ZAI_SECRET_KEY")
+	defer func() {
+		if originalKey != "" {
+			os.Setenv("ZAI_SECRET_KEY", originalKey)
+		} else {
+			os.Unsetenv("ZAI_SECRET_KEY")
+		}
+	}()
+
+	os.Setenv("ZAI_SECRET_KEY", "test-key")
+
+	generator := NewSignatureGenerator()
+
 	params := map[string]string{
 		"timestamp": "1732912800000",
 		"requestId": "test-request-id",
@@ -120,12 +230,12 @@ func TestGenerateSignature_Deterministic(t *testing.T) {
 	content := "Test content"
 
 	// Generate signature twice with same inputs
-	result1, err1 := GenerateSignature(params, content)
+	result1, err1 := generator.GenerateSignature(params, content)
 	if err1 != nil {
 		t.Fatalf("First GenerateSignature() failed: %v", err1)
 	}
 
-	result2, err2 := GenerateSignature(params, content)
+	result2, err2 := generator.GenerateSignature(params, content)
 	if err2 != nil {
 		t.Fatalf("Second GenerateSignature() failed: %v", err2)
 	}
@@ -136,48 +246,35 @@ func TestGenerateSignature_Deterministic(t *testing.T) {
 	}
 }
 
-func TestGenerateSignature_DifferentContent(t *testing.T) {
-	params := map[string]string{
-		"timestamp": "1732912800000",
-		"requestId": "test-request-id",
-		"user_id":   "test-user-id",
+func TestGenerateSignature_ValidHexFormat(t *testing.T) {
+	originalKey := os.Getenv("ZAI_SECRET_KEY")
+	defer func() {
+		if originalKey != "" {
+			os.Setenv("ZAI_SECRET_KEY", originalKey)
+		} else {
+			os.Unsetenv("ZAI_SECRET_KEY")
+		}
+	}()
+
+	os.Setenv("ZAI_SECRET_KEY", "test-key")
+
+	generator := NewSignatureGenerator()
+	params := map[string]string{"key": "value"}
+
+	result, err := generator.GenerateSignature(params, "message")
+	if err != nil {
+		t.Fatalf("GenerateSignature() error = %v", err)
 	}
 
-	result1, _ := GenerateSignature(params, "content1")
-	result2, _ := GenerateSignature(params, "content2")
-
-	// Different content should produce different signatures
-	if result1.Signature == result2.Signature {
-		t.Error("GenerateSignature() produced same signature for different content")
-	}
-}
-
-func TestHmacSHA256(t *testing.T) {
-	key := []byte("test-key")
-	message := []byte("test-message")
-
-	result := hmacSHA256(key, message)
-
-	if result == "" {
-		t.Error("hmacSHA256() returned empty string")
-	}
-
-	// Should return hex-encoded string
-	if len(result) != 64 { // SHA256 produces 32 bytes = 64 hex chars
-		t.Errorf("hmacSHA256() returned unexpected length: got %d, want 64", len(result))
-	}
-}
-
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && (s == substr || len(substr) == 0 ||
-		(len(s) > 0 && len(substr) > 0 && findSubstring(s, substr)))
-}
-
-func findSubstring(s, substr string) bool {
-	for i := 0; i <= len(s)-len(substr); i++ {
-		if s[i:i+len(substr)] == substr {
-			return true
+	// Verify signature is hex-encoded (only contains 0-9, a-f)
+	for _, char := range result.Signature {
+		if !strings.ContainsRune("0123456789abcdef", char) {
+			t.Errorf("Signature contains invalid hex character: %c", char)
 		}
 	}
-	return false
+
+	// SHA256 produces 32 bytes = 64 hex chars
+	if len(result.Signature) != 64 {
+		t.Errorf("Signature length = %d, want 64", len(result.Signature))
+	}
 }

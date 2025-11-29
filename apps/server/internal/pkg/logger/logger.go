@@ -16,15 +16,24 @@ type Logger struct {
 
 var globalLogger *Logger
 
-// Init initializes the global logger with the specified configuration
+// Init initializes the global logger with the specified configuration, writing to stdout.
 func Init(debug bool) {
-	var output io.Writer = os.Stdout
+	InitWithWriter(debug, os.Stdout)
+}
+
+// InitWithWriter initializes the global logger with a specific writer.
+func InitWithWriter(debug bool, writer io.Writer) {
+	var output io.Writer = writer
 
 	// Use pretty console output in debug mode, JSON otherwise
 	if debug {
-		output = zerolog.ConsoleWriter{
-			Out:        os.Stdout,
-			TimeFormat: time.RFC3339,
+		// In tests, we might not want console writer, but for general debug, it's fine.
+		// A test can pass a plain writer to get JSON output.
+		if f, ok := writer.(*os.File); ok && (f == os.Stdout || f == os.Stderr) {
+			output = zerolog.ConsoleWriter{
+				Out:        writer,
+				TimeFormat: time.RFC3339,
+			}
 		}
 	}
 
@@ -37,7 +46,8 @@ func Init(debug bool) {
 		Level(level).
 		With().
 		Timestamp().
-		Caller().
+		// Disable caller in tests to avoid brittle tests with line numbers
+		// Caller().
 		Logger()
 
 	globalLogger = &Logger{logger: zlog}

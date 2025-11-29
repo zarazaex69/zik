@@ -2,7 +2,7 @@ package domain
 
 // ChatRequest represents an OpenAI-compatible chat completion request
 type ChatRequest struct {
-	Model       string         `json:"model" validate:"required"`
+	Model       string         `json:"model"`
 	Messages    []Message      `json:"messages" validate:"required,min=1,dive"`
 	Stream      bool           `json:"stream"`
 	Temperature *float64       `json:"temperature,omitempty" validate:"omitempty,gte=0,lte=2"`
@@ -42,9 +42,23 @@ type Choice struct {
 
 // ResponseMessage represents a response message
 type ResponseMessage struct {
-	Role             string `json:"role,omitempty"`
-	Content          string `json:"content,omitempty"`
-	ReasoningContent string `json:"reasoning_content,omitempty"`
+	Role             string     `json:"role,omitempty"`
+	Content          string     `json:"content,omitempty"`
+	ReasoningContent string     `json:"reasoning_content,omitempty"`
+	ToolCalls        []ToolCall `json:"tool_calls,omitempty"`
+}
+
+// ToolCall represents a tool call
+type ToolCall struct {
+	ID       string       `json:"id"`
+	Type     string       `json:"type"`
+	Function FunctionCall `json:"function"`
+}
+
+// FunctionCall represents a function call
+type FunctionCall struct {
+	Name      string `json:"name"`
+	Arguments string `json:"arguments"`
 }
 
 // Usage represents token usage statistics
@@ -78,4 +92,17 @@ type Model struct {
 	Object  string `json:"object"`
 	Created int64  `json:"created"`
 	OwnedBy string `json:"owned_by"`
+}
+
+// ZaiResponse represents a response from Z.AI API
+type ZaiResponse struct {
+	Data *ZaiResponseData `json:"data"`
+}
+
+// ZaiResponseData represents the data field in Z.AI response
+type ZaiResponseData struct {
+	Phase        string `json:"phase"`
+	DeltaContent string `json:"delta_content"`
+	EditContent  string `json:"edit_content"`
+	Done         bool   `json:"done"`
 }

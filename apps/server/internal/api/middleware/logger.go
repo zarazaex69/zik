@@ -13,7 +13,7 @@ func Logger(next http.Handler) http.Handler {
 		start := time.Now()
 
 		// Create response writer wrapper to capture status code
-		wrapped := &responseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+		wrapped := NewResponseWriter(w)
 
 		// Call next handler
 		next.ServeHTTP(wrapped, r)
@@ -23,20 +23,32 @@ func Logger(next http.Handler) http.Handler {
 		logger.Info().
 			Str("method", r.Method).
 			Str("path", r.URL.Path).
-			Int("status", wrapped.statusCode).
+			Int("status", wrapped.StatusCode).
 			Dur("duration", duration).
 			Str("remote_addr", r.RemoteAddr).
 			Msg("HTTP request")
 	})
 }
 
-// responseWriter wraps http.ResponseWriter to capture status code
-type responseWriter struct {
+// ResponseWriter wraps http.ResponseWriter to capture status code
+type ResponseWriter struct {
 	http.ResponseWriter
-	statusCode int
+	StatusCode int
 }
 
-func (rw *responseWriter) WriteHeader(code int) {
-	rw.statusCode = code
+// NewResponseWriter creates a new ResponseWriter.
+func NewResponseWriter(w http.ResponseWriter) *ResponseWriter {
+	return &ResponseWriter{ResponseWriter: w, StatusCode: http.StatusOK}
+}
+
+func (rw *ResponseWriter) WriteHeader(code int) {
+	rw.StatusCode = code
 	rw.ResponseWriter.WriteHeader(code)
+}
+
+// Flush implements http.Flusher interface
+func (rw *ResponseWriter) Flush() {
+	if flusher, ok := rw.ResponseWriter.(http.Flusher); ok {
+		flusher.Flush()
+	}
 }

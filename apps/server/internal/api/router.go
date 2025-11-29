@@ -6,10 +6,11 @@ import (
 	"github.com/zarazaex/zik/apps/server/internal/api/middleware"
 	"github.com/zarazaex/zik/apps/server/internal/config"
 	"github.com/zarazaex/zik/apps/server/internal/service/ai"
+	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
 )
 
 // NewRouter creates a new HTTP router with all routes and middleware
-func NewRouter(cfg *config.Config, aiClient *ai.Client) *chi.Mux {
+func NewRouter(cfg *config.Config, aiClient ai.AIClienter, tokenizer utils.Tokener) *chi.Mux {
 	r := chi.NewRouter()
 
 	// Global middleware
@@ -20,7 +21,7 @@ func NewRouter(cfg *config.Config, aiClient *ai.Client) *chi.Mux {
 	// Routes
 	r.Get("/health", handlers.Health(cfg))
 	r.Get("/v1/models", handlers.Models(cfg))
-	r.Post("/v1/chat/completions", handlers.ChatCompletions(cfg, aiClient))
+	r.Post("/v1/chat/completions", handlers.ChatCompletions(cfg, aiClient, tokenizer))
 
 	return r
 }

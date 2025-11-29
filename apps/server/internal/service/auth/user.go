@@ -23,19 +23,11 @@ type cachedUser struct {
 	cachedAt time.Time
 }
 
-var (
-	instance *Service
-	once     sync.Once
-)
-
 // NewService creates a new auth service instance
 func NewService() *Service {
-	once.Do(func() {
-		instance = &Service{
-			cache: make(map[string]*cachedUser),
-		}
-	})
-	return instance
+	return &Service{
+		cache: make(map[string]*cachedUser),
+	}
 }
 
 // GetUser retrieves user information from Z.AI API with caching
