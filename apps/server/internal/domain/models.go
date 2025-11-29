@@ -1,0 +1,81 @@
+package domain
+
+// ChatRequest represents an OpenAI-compatible chat completion request
+type ChatRequest struct {
+	Model       string         `json:"model" validate:"required"`
+	Messages    []Message      `json:"messages" validate:"required,min=1,dive"`
+	Stream      bool           `json:"stream"`
+	Temperature *float64       `json:"temperature,omitempty" validate:"omitempty,gte=0,lte=2"`
+	MaxTokens   *int           `json:"max_tokens,omitempty" validate:"omitempty,gt=0"`
+	TopP        *float64       `json:"top_p,omitempty" validate:"omitempty,gte=0,lte=1"`
+	StreamOpts  *StreamOptions `json:"stream_options,omitempty"`
+}
+
+// Message represents a single chat message
+type Message struct {
+	Role    string      `json:"role" validate:"required,oneof=system user assistant"`
+	Content interface{} `json:"content" validate:"required"`
+}
+
+// StreamOptions controls streaming behavior
+type StreamOptions struct {
+	IncludeUsage bool `json:"include_usage"`
+}
+
+// ChatResponse represents an OpenAI-compatible chat completion response
+type ChatResponse struct {
+	ID      string   `json:"id"`
+	Object  string   `json:"object"`
+	Created int64    `json:"created"`
+	Model   string   `json:"model"`
+	Choices []Choice `json:"choices"`
+	Usage   *Usage   `json:"usage,omitempty"`
+}
+
+// Choice represents a single completion choice
+type Choice struct {
+	Index        int              `json:"index"`
+	Message      *ResponseMessage `json:"message,omitempty"`
+	Delta        *ResponseMessage `json:"delta,omitempty"`
+	FinishReason *string          `json:"finish_reason"`
+}
+
+// ResponseMessage represents a response message
+type ResponseMessage struct {
+	Role             string `json:"role,omitempty"`
+	Content          string `json:"content,omitempty"`
+	ReasoningContent string `json:"reasoning_content,omitempty"`
+}
+
+// Usage represents token usage statistics
+type Usage struct {
+	PromptTokens     int `json:"prompt_tokens"`
+	CompletionTokens int `json:"completion_tokens"`
+	TotalTokens      int `json:"total_tokens"`
+}
+
+// User represents an authenticated user
+type User struct {
+	ID    string
+	Token string
+}
+
+// HealthResponse represents a health check response
+type HealthResponse struct {
+	Status  string `json:"status"`
+	Version string `json:"version"`
+}
+
+// ModelsResponse represents the /v1/models response
+type ModelsResponse struct {
+	Object string  `json:"object"`
+	Data   []Model `json:"data"`
+}
+
+// Model represents a single model
+type Model struct {
+	ID      string `json:"id"`
+	Object  string `json:"object"`
+	Created int64  `json:"created"`
+	OwnedBy string `json:"owned_by"`
+}
