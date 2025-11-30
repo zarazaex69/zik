@@ -35,9 +35,22 @@ func ParseSSEStream(resp *http.Response) <-chan *domain.ZaiResponse {
 
 			// Extract JSON data
 			jsonData := line[6:] // Skip "data: " prefix
+			
+			// Skip [DONE] marker
+			if strings.TrimSpace(string(jsonData)) == "[DONE]" {
+				continue
+			}
 
 			var zaiResp domain.ZaiResponse
 			if err := json.Unmarshal(jsonData, &zaiResp); err != nil {
+				// Try parsing as raw response with string data field
+				var rawResp struct {
+					Data string `json:"data"`
+				}
+				if err2 := json.Unmarshal(jsonData, &rawResp); err2 == nil && rawResp.Data != "" {
+					// Skip non-JSON data strings
+					continue
+				}
 				logger.Debug().Err(err).Msg("Failed to parse SSE event")
 				continue
 			}

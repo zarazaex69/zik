@@ -9,6 +9,7 @@ import (
 
 	"github.com/zarazaex/zik/apps/server/internal/config"
 	"github.com/zarazaex/zik/apps/server/internal/domain"
+	"github.com/zarazaex/zik/apps/server/internal/pkg/httpclient"
 	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
 )
 
@@ -66,7 +67,7 @@ func (s *Service) GetUser(cfg *config.Config) (*domain.User, error) {
 	}
 
 	// Send request
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := httpclient.New(10 * time.Second)
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch user info: %w", err)

@@ -111,15 +111,34 @@ func FormatRequest(req *domain.ChatRequest, cfg *config.Config) (map[string]inte
 	result["model"] = model
 	result["messages"] = newMessages
 	result["stream"] = true
+	result["params"] = map[string]interface{}{}
+
+	// Add tools if provided (convert OpenAI format to Z.AI format)
+	if len(req.Tools) > 0 {
+		zaiTools := make([]map[string]interface{}, len(req.Tools))
+		for i, tool := range req.Tools {
+			zaiTools[i] = map[string]interface{}{
+				"name":         tool.Function.Name,
+				"description":  tool.Function.Description,
+				"input_schema": tool.Function.Parameters,
+			}
+		}
+		result["tools"] = zaiTools
+	}
 
 	// Handle features
 	features := map[string]interface{}{
-		"enable_thinking": false,
+		"image_generation": false,
+		"web_search":       false,
+		"auto_web_search":  false,
+	}
+	
+	// Add thinking mode if specified
+	if req.Thinking != nil {
+		features["thinking"] = *req.Thinking
 	}
 
-	if len(features) > 0 {
-		result["features"] = features
-	}
+	result["features"] = features
 
 	return result, nil
 }

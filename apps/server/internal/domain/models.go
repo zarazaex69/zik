@@ -9,6 +9,21 @@ type ChatRequest struct {
 	MaxTokens   *int           `json:"max_tokens,omitempty" validate:"omitempty,gt=0"`
 	TopP        *float64       `json:"top_p,omitempty" validate:"omitempty,gte=0,lte=1"`
 	StreamOpts  *StreamOptions `json:"stream_options,omitempty"`
+	Tools       []Tool         `json:"tools,omitempty"`
+	Thinking    *bool          `json:"thinking,omitempty"`
+}
+
+// Tool represents a tool definition
+type Tool struct {
+	Type     string       `json:"type"`
+	Function ToolFunction `json:"function"`
+}
+
+// ToolFunction represents a function tool
+type ToolFunction struct {
+	Name        string      `json:"name"`
+	Description string      `json:"description"`
+	Parameters  interface{} `json:"parameters"`
 }
 
 // Message represents a single chat message
@@ -46,6 +61,7 @@ type ResponseMessage struct {
 	Content          string     `json:"content,omitempty"`
 	ReasoningContent string     `json:"reasoning_content,omitempty"`
 	ToolCalls        []ToolCall `json:"tool_calls,omitempty"`
+	ToolCall         string     `json:"tool_call,omitempty"` // Raw tool_call string from Z.AI
 }
 
 // ToolCall represents a tool call

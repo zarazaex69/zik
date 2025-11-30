@@ -12,6 +12,7 @@ import (
 	"github.com/zarazaex/zik/apps/server/internal/config"
 	"github.com/zarazaex/zik/apps/server/internal/domain"
 	"github.com/zarazaex/zik/apps/server/internal/pkg/crypto"
+	"github.com/zarazaex/zik/apps/server/internal/pkg/httpclient"
 	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
 	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
 	"github.com/zarazaex/zik/apps/server/internal/service/auth"
@@ -19,16 +20,16 @@ import (
 
 // Client handles communication with Z.AI API
 type Client struct {
-	cfg         *config.Config
-	authService auth.AuthServicer
+	cfg          *config.Config
+	authService  auth.AuthServicer
 	signatureGen crypto.SignatureGenerator // New field for dependency injection
 }
 
 // NewClient creates a new Z.AI API client
 func NewClient(cfg *config.Config, authSvc auth.AuthServicer, sigGen crypto.SignatureGenerator) *Client {
 	return &Client{
-		cfg:         cfg,
-		authService: authSvc,
+		cfg:          cfg,
+		authService:  authSvc,
 		signatureGen: sigGen, // Assign the injected signature generator
 	}
 }
@@ -48,6 +49,9 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 	params := url.Values{}
 	params.Set("timestamp", fmt.Sprintf("%d", timestamp))
 	params.Set("requestId", requestID)
+	params.Set("version", "0.0.1")
+	params.Set("platform", "web")
+	params.Set("token", user.Token)
 
 	// Build headers
 	headers := c.cfg.GetUpstreamHeaders()
@@ -82,7 +86,7 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 		if err != nil {
 			logger.Warn().Err(err).Msg("Failed to generate signature, continuing without it")
 		} else {
-			headers["X-Signature"] = sigResult.Signature
+			headers["x-signature"] = sigResult.Signature
 			params.Set("signature_timestamp", fmt.Sprintf("%d", sigResult.Timestamp))
 			requestBody["signature_prompt"] = lastUserMsg
 		}
@@ -102,6 +106,7 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 		Str("url", apiURL).
 		Str("chat_id", chatID).
 		Str("model", req.Model).
+		Str("body", string(bodyBytes)).
 		Msg("Sending chat request to Z.AI")
 
 	// Create HTTP request
@@ -116,7 +121,7 @@ func (c *Client) SendChatRequest(req *domain.ChatRequest, chatID string) (*http.
 	}
 
 	// Send request with no timeout for streaming
-	client := &http.Client{Timeout: 0}
+	client := httpclient.New(0)
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		return nil, fmt.Errorf("failed to send request: %w", err)
