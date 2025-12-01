@@ -1,5 +1,5 @@
 # Build stage
-FROM oven/bun:1-alpine AS builder
+FROM docker.io/oven/bun:1-alpine AS builder
 
 WORKDIR /build
 
@@ -14,7 +14,7 @@ COPY . .
 RUN bun run build
 
 # Runtime stage
-FROM oven/bun:1-alpine
+FROM docker.io/oven/bun:1-alpine
 
 WORKDIR /app
 
