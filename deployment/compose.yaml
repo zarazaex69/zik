@@ -1,0 +1,62 @@
+version: '3.8'
+
+networks:
+  server-net:
+    driver: bridge
+
+services:
+  # ZIK API Server
+  zik-server:
+    container_name: zik-server
+    build:
+      context: ../apps/server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8804:8804"
+    environment:
+      - PORT=8804
+      - DEBUG=false
+      - ZAI_TOKEN=${ZAI_TOKEN:-}
+      - MODEL=GLM-4-6-API-V1
+      - THINK_MODE=reasoning
+    networks:
+      - server-net
+    stop_grace_period: 5s
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8804/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  # ZIK Web UI
+  zik-web:
+    container_name: zik-web
+    build:
+      context: ../apps/web
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8805:8805"
+    environment:
+      - PORT=8805
+      - API_URL=https://api.zik.zarazaex.xyz
+    networks:
+      - server-net
+    depends_on:
+      zik-server:
+        condition: service_healthy
+    stop_grace_period: 5s
+
+  # Cloudflare Tunnel (если нужен отдельный для ZIK)
+  # cloudflared:
+  #   container_name: zik-cloudflared
+  #   image: docker.io/cloudflare/cloudflared:latest
+  #   restart: always
+  #   network_mode: "host"
+  #   command: tunnel run --protocol http2 --token YOUR_TOKEN_HERE
+  #   depends_on:
+  #     - zik-server
+  #     - zik-web
+  #   stop_grace_period: 1s
