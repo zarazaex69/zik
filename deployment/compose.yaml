@@ -47,7 +47,9 @@ services:
     depends_on:
       zik-server:
         condition: service_healthy
-    stop_grace_period: 5s
+    init: true
+    stop_grace_period: 10s
+    stop_signal: SIGTERM
 
   # Cloudflare Tunnel (если нужен отдельный для ZIK)
   # cloudflared:

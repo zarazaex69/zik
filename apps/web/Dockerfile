@@ -31,4 +31,5 @@ USER bun
 # Set production environment
 ENV NODE_ENV=production
 
-CMD ["bun", "src/index.ts"]
+# Use exec form and run with --bun flag for proper signal handling
+CMD ["bun", "run", "src/index.ts"]

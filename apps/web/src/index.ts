@@ -68,3 +68,20 @@ const server = serve({
 });
 
 console.log(`Server running at ${server.url}`);
+
+// Graceful shutdown handler
+const shutdown = async (signal: string) => {
+  console.log(`\n${signal} received, shutting down gracefully...`);
+  try {
+    server.stop();
+    console.log("Server stopped successfully");
+    process.exit(0);
+  } catch (error) {
+    console.error("Error during shutdown:", error);
+    process.exit(1);
+  }
+};
+
+// Handle shutdown signals
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
