@@ -8,7 +8,7 @@ interface InstallSectionProps {
 
 export const InstallSection: React.FC<InstallSectionProps> = ({ title, alternative }) => {
   const [copied, setCopied] = useState(false);
-  const installCommand = 'https://zik.zarazaex.xyz/install | bash';
+  const installCommand = '-fsSL https://zik.zarazaex.xyz/install | bash';
 
   const handleCopy = () => {
     navigator.clipboard.writeText(installCommand);
