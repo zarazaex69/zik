@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/domain"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/domain"
 )
 
 func TestHealth(t *testing.T) {

@@ -5,13 +5,13 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/zarazaex/zik/apps/server/internal/api"
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/crypto"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
-	"github.com/zarazaex/zik/apps/server/internal/service/ai"
-	"github.com/zarazaex/zik/apps/server/internal/service/auth"
+	"github.com/zarazaex69/zik/apps/server/internal/api"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/crypto"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/utils"
+	"github.com/zarazaex69/zik/apps/server/internal/service/ai"
+	"github.com/zarazaex69/zik/apps/server/internal/service/auth"
 )
 
 func main() {

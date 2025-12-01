@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zarazaex/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
 )
 
 func TestGetUser(t *testing.T) {

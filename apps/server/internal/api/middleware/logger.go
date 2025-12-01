@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
 )
 
 // Logger middleware logs HTTP requests

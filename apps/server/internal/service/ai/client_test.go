@@ -8,10 +8,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/domain"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/crypto"
-	"github.com/zarazaex/zik/apps/server/internal/service/auth"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/domain"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/crypto"
+	"github.com/zarazaex69/zik/apps/server/internal/service/auth"
 )
 
 // mockSignatureGenerator is a mock implementation of crypto.SignatureGenerator for testing

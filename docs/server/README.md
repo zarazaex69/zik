@@ -712,8 +712,8 @@ The API enforces rate limiting to ensure fair usage:
 
 For issues, questions, or contributions:
 
-- **GitHub**: [zarazaex/zik](https://github.com/zarazaex/zik)
-- **Issues**: [GitHub Issues](https://github.com/zarazaex/zik/issues)
+- **GitHub**: [zarazaex69/zik](https://github.com/zarazaex69/zik)
+- **Issues**: [GitHub Issues](https://github.com/zarazaex69/zik/issues)
 
 ---
 

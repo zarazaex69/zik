@@ -1,4 +1,4 @@
-module github.com/zarazaex/zik/apps/server
+module github.com/zarazaex69/zik/apps/server
 
 go 1.23
 

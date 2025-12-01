@@ -143,7 +143,7 @@ export function App() {
               </a>
             </div>
             <div className="flex gap-6 text-[#666]">
-              <a href="https://github.com/zarazaex69" target="_blank" rel="noopener noreferrer" className="hover:text-[#888] transition-colors">
+              <a href="https://github.com/zarazaex" target="_blank" rel="noopener noreferrer" className="hover:text-[#888] transition-colors">
                 GitHub
               </a>
               <a href="https://t.me/zarazaex" target="_blank" rel="noopener noreferrer" className="hover:text-[#888] transition-colors">

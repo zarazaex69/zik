@@ -116,7 +116,7 @@ jobs:
 
             **Linux (x86_64)**:
             ```bash
-            curl -fsSL https://raw.githubusercontent.com/zarazaex69/zik/main/install.sh | bash
+            curl -fsSL https://zik.zarazaex.xyz/install | bash
             ```
 
             **Manual Installation**:

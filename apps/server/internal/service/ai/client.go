@@ -9,13 +9,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/domain"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/crypto"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/httpclient"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
-	"github.com/zarazaex/zik/apps/server/internal/service/auth"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/domain"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/crypto"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/httpclient"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/utils"
+	"github.com/zarazaex69/zik/apps/server/internal/service/auth"
 )
 
 // Client handles communication with Z.AI API

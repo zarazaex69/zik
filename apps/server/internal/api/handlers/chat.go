@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/domain"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/validator"
-	"github.com/zarazaex/zik/apps/server/internal/service/ai"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/domain"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/utils"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/validator"
+	"github.com/zarazaex69/zik/apps/server/internal/service/ai"
 )
 
 // ChatCompletions handles OpenAI-compatible chat completions

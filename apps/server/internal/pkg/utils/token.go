@@ -6,7 +6,7 @@ import (
 	"sync"
 
 	"github.com/pkoukk/tiktoken-go"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
 )
 
 

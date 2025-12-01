@@ -3,7 +3,7 @@ package middleware
 import (
 	"net/http"
 
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
 )
 
 // Recovery middleware recovers from panics and logs them

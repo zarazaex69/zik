@@ -18,7 +18,7 @@ OpenAI-compatible AI server powered by GLM-4.6 via Z.AI reverse-engineered API.
 
 ```bash
 # Clone repository
-git clone https://github.com/zarazaex/zik.git
+git clone https://github.com/zarazaex69/zik.git
 cd zik/apps/server
 
 # Install dependencies

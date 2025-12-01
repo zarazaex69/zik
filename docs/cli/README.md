@@ -11,6 +11,12 @@ Command-line interface for ZIK AI assistant. Generate commit messages, chat with
 
 ## Installation
 
+### Quick Install
+
+```bash
+curl -fsSL https://zik.zarazaex.xyz/install | bash
+```
+
 ### From Source
 
 ```bash
@@ -19,9 +25,9 @@ make build
 sudo make install
 ```
 
-### Binary
+### Manual Installation
 
-Download the latest release from GitHub and place it in your PATH.
+Download the latest release from [GitHub Releases](https://github.com/zarazaex69/zik/releases) and place it in your PATH.
 
 ## Quick Start
 

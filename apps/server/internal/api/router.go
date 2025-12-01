@@ -2,11 +2,11 @@ package api
 
 import (
 	"github.com/go-chi/chi/v5"
-	"github.com/zarazaex/zik/apps/server/internal/api/handlers"
-	"github.com/zarazaex/zik/apps/server/internal/api/middleware"
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/utils"
-	"github.com/zarazaex/zik/apps/server/internal/service/ai"
+	"github.com/zarazaex69/zik/apps/server/internal/api/handlers"
+	"github.com/zarazaex69/zik/apps/server/internal/api/middleware"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/utils"
+	"github.com/zarazaex69/zik/apps/server/internal/service/ai"
 )
 
 // NewRouter creates a new HTTP router with all routes and middleware

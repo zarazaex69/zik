@@ -7,10 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zarazaex/zik/apps/server/internal/config"
-	"github.com/zarazaex/zik/apps/server/internal/domain"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/httpclient"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/config"
+	"github.com/zarazaex69/zik/apps/server/internal/domain"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/httpclient"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
 )
 
 // Service handles user authentication with caching

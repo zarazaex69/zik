@@ -3,7 +3,7 @@ package ai
 import (
 	"net/http"
 
-	"github.com/zarazaex/zik/apps/server/internal/domain"
+	"github.com/zarazaex69/zik/apps/server/internal/domain"
 )
 
 // AIClienter defines the interface for the AI client.

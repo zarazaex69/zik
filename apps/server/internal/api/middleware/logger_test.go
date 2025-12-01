@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/zarazaex/zik/apps/server/internal/api/middleware"
-	"github.com/zarazaex/zik/apps/server/internal/pkg/logger"
+	"github.com/zarazaex69/zik/apps/server/internal/api/middleware"
+	"github.com/zarazaex69/zik/apps/server/internal/pkg/logger"
 )
 
 type mockFlusherResponseWriter struct {
