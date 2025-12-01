@@ -23,7 +23,7 @@ type Client struct {
 func NewClient(cfg *config.Config) *Client {
 	return &Client{
 		httpClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Timeout: 30 * time.Second, // Only for non-streaming requests
 		},
 		// Endpoint is hardcoded but can be overridden via env var for development
 		endpoint: config.GetAPIEndpoint(),
@@ -150,7 +150,11 @@ func (c *Client) ChatStream(ctx context.Context, messages []Message, temperature
 
 		httpReq.Header.Set("Content-Type", "application/json")
 
-		resp, err := c.httpClient.Do(httpReq)
+		// Use a client without timeout for streaming
+		streamClient := &http.Client{
+			Timeout: 0, // No timeout for streaming
+		}
+		resp, err := streamClient.Do(httpReq)
 		if err != nil {
 			errChan <- fmt.Errorf("request failed: %w", err)
 			return

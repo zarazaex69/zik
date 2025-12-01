@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/zarazaex69/zik/apps/cli/internal/ai"
 	"github.com/zarazaex69/zik/apps/cli/internal/config"
+	"github.com/zarazaex69/zik/apps/cli/internal/render"
 )
 
 var (
@@ -48,18 +49,24 @@ func runAsk(cmd *cobra.Command, args []string) error {
 	}
 
 	if askStream {
-		// Streaming response
+		// Streaming response with markdown rendering
+		renderer := render.NewMarkdownRenderer()
 		chunkChan, errChan := aiClient.ChatStream(ctx, messages, cfg.Temperature, cfg.MaxTokens)
 
 		for {
 			select {
 			case chunk, ok := <-chunkChan:
 				if !ok {
+					// Flush any remaining buffered content
+					if remaining := renderer.Flush(); remaining != "" {
+						fmt.Print(remaining)
+					}
 					fmt.Println() // New line at end
 					return nil
 				}
 				if chunk.Content != "" {
-					fmt.Print(chunk.Content)
+					formatted := renderer.ProcessChunk(chunk.Content)
+					fmt.Print(formatted)
 				}
 			case err := <-errChan:
 				if err != nil {
@@ -68,7 +75,7 @@ func runAsk(cmd *cobra.Command, args []string) error {
 			}
 		}
 	} else {
-		// Non-streaming response
+		// Non-streaming response with markdown rendering
 		resp, err := aiClient.Chat(ctx, messages, cfg.Temperature, cfg.MaxTokens)
 		if err != nil {
 			return fmt.Errorf("AI request failed: %w", err)
@@ -78,7 +85,9 @@ func runAsk(cmd *cobra.Command, args []string) error {
 			return fmt.Errorf("no response from AI")
 		}
 
-		fmt.Println(resp.Choices[0].Message.Content)
+		renderer := render.NewMarkdownRenderer()
+		formatted := renderer.ProcessChunk(resp.Choices[0].Message.Content)
+		fmt.Println(formatted)
 	}
 
 	return nil

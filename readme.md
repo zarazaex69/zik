@@ -14,7 +14,7 @@ Powerful AI-powered tools for developers: CLI assistant, commit message generato
 ### Install CLI
 
 ```bash
-curl -fsSL https://zik.zarazaex.xyz/install | bash
+curl -fsSL zik.zarazaex.xyz/install | bash
 ```
 
 ## Overview
@@ -77,7 +77,7 @@ make build && ./bin/zik-server
 ### API Usage
 
 ```bash
-curl -X POST https://api-zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -176,7 +176,7 @@ ZIK API is fully compatible with OpenAI's chat completions API. You can use it a
 from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api-zik.zarazaex.xyz/v1",
+    base_url="https://zik-api.zarazaex.xyz/v1",
     api_key="not-needed"
 )
 
@@ -207,7 +207,7 @@ BSD License - See LICENSE file for details
 ## Links
 
 - Website: [zik.zarazaex.xyz](https://zik.zarazaex.xyz)
-- API: [api-zik.zarazaex.xyz](https://api-zik.zarazaex.xyz)
+- API: [zik-api.zarazaex.xyz](https://zik-api.zarazaex.xyz)
 - GitHub: [github.com/zarazaex69/zik](https://github.com/zarazaex69/zik)
 
 ## Acknowledgments
