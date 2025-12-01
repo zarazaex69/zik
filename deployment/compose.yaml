@@ -51,14 +51,3 @@ services:
     stop_grace_period: 10s
     stop_signal: SIGTERM
 
-  # Cloudflare Tunnel (если нужен отдельный для ZIK)
-  # cloudflared:
-  #   container_name: zik-cloudflared
-  #   image: docker.io/cloudflare/cloudflared:latest
-  #   restart: always
-  #   network_mode: "host"
-  #   command: tunnel run --protocol http2 --token YOUR_TOKEN_HERE
-  #   depends_on:
-  #     - zik-server
-  #     - zik-web
-  #   stop_grace_period: 1s
