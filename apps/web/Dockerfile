@@ -10,21 +10,13 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build application
-RUN bun run build
-
 # Runtime stage
 FROM docker.io/oven/bun:1-alpine
 
 WORKDIR /app
 
-# Copy built application
-COPY --from=builder /build/dist ./dist
-COPY --from=builder /build/src ./src
-COPY --from=builder /build/package.json ./
-
-# Install production dependencies only
-RUN bun install --production --frozen-lockfile
+# Copy everything from builder (source + dependencies)
+COPY --from=builder /build ./
 
 # Expose port
 EXPOSE 8805
@@ -36,4 +28,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Run as non-root user
 USER bun
 
-CMD ["bun", "start"]
+# Set production environment
+ENV NODE_ENV=production
+
+CMD ["bun", "src/index.ts"]
