@@ -67,10 +67,10 @@ export function App() {
               
               {/* Install command below */}
               <div className="install-simple">
-                <code className="install-command">curl zik.zarazaex.xyz/install | bash</code>
+                <code className="install-command">curl -fsSL zik.zarazaex.xyz/install  | bash</code>
                 <button
                   onClick={() => {
-                    navigator.clipboard.writeText('curl zik.zarazaex.xyz/install | bash');
+                    navigator.clipboard.writeText('curl -fsSL zik.zarazaex.xyz/install  | bash');
                   }}
                   className="install-copy"
                   title="Copy"
