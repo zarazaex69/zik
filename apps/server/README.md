@@ -4,13 +4,13 @@ OpenAI-compatible AI server powered by GLM-4.6 via Z.AI reverse-engineered API.
 
 ## Features
 
-- ✅ **OpenAI-Compatible API** - Drop-in replacement for OpenAI chat completions
-- ✅ **Streaming Support** - Real-time SSE streaming responses
-- ✅ **Free GLM-4.6 Access** - Unlimited free access to GLM-4.6 model
-- ✅ **Structured Logging** - Production-ready logging with zerolog
-- ✅ **Clean Architecture** - Maintainable and testable codebase
-- ✅ **Token Counting** - Accurate usage tracking with tiktoken
-- ✅ **YAML Configuration** - Flexible configuration with ENV overrides
+- **OpenAI-Compatible API** - Drop-in replacement for OpenAI chat completions
+- **Streaming Support** - Real-time SSE streaming responses
+- **Free GLM-4.6 Access** - Unlimited free access to GLM-4.6 model
+- **Structured Logging** - Production-ready logging with zerolog
+- **Clean Architecture** - Maintainable and testable codebase
+- **Token Counting** - Accurate usage tracking with tiktoken
+- **YAML Configuration** - Flexible configuration with ENV overrides
 
 ## Quick Start
 

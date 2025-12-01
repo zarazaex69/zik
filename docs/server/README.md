@@ -5,7 +5,7 @@ Complete API reference for the Zik AI Server - an OpenAI-compatible API gateway 
 ## Base URLs
 
 - **Local Development**: `http://localhost:8802`
-- **Production**: `https://api.zik.zarazaex.xyz`
+- **Production**: `https://zik-api.zarazaex.xyz`
 
 ## Authentication
 
@@ -37,7 +37,7 @@ Check server status and version.
 curl http://localhost:8802/health
 
 # Production
-curl https://api.zik.zarazaex.xyz/health
+curl https://zik-api.zarazaex.xyz/health
 ```
 
 ---
@@ -71,7 +71,7 @@ Retrieve available AI models.
 curl http://localhost:8802/v1/models
 
 # Production
-curl https://api.zik.zarazaex.xyz/v1/models
+curl https://zik-api.zarazaex.xyz/v1/models
 ```
 
 ---
@@ -185,7 +185,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Simple request
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -210,7 +210,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - With system prompt and parameters
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -237,7 +237,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Multi-turn conversation
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -307,7 +307,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Basic streaming
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -332,7 +332,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Streaming with usage tracking
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -358,7 +358,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Streaming with temperature control
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -435,7 +435,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Reasoning mode
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -459,7 +459,7 @@ curl -X POST http://localhost:8802/v1/chat/completions \
   }'
 
 # Production - Reasoning with streaming
-curl -X POST https://api.zik.zarazaex.xyz/v1/chat/completions \
+curl -X POST https://zik-api.zarazaex.xyz/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "GLM-4-6-API-V1",
@@ -574,7 +574,7 @@ client = OpenAI(
 
 # Production
 client = OpenAI(
-    base_url="https://api.zik.zarazaex.xyz/v1",
+    base_url="https://zik-api.zarazaex.xyz/v1",
     api_key="not-needed"
 )
 
@@ -613,7 +613,7 @@ const client = new OpenAI({
 
 // Production
 const client = new OpenAI({
-  baseURL: 'https://api.zik.zarazaex.xyz/v1',
+  baseURL: 'https://zik-api.zarazaex.xyz/v1',
   apiKey: 'not-needed'
 });
 
@@ -654,7 +654,7 @@ func main() {
     config.BaseURL = "http://localhost:8802/v1"
     
     // Production
-    // config.BaseURL = "https://api.zik.zarazaex.xyz/v1"
+    // config.BaseURL = "https://zik-api.zarazaex.xyz/v1"
     
     client := openai.NewClientWithConfig(config)
     

@@ -30,7 +30,7 @@ export const StatsSection: React.FC<StatsSectionProps> = ({ stats }) => {
           <StatItem value="100%" label={stats.free} />
           <StatItem value="GLM-4" label={stats.models} />
           <StatItem value="∞" label={stats.unlimited} />
-          <StatItem value="🚀" label={stats.fast} />
+          <StatItem value="Fast" label={stats.fast} />
         </div>
       </div>
     </section>

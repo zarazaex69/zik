@@ -207,7 +207,7 @@ apps/cli/
 
 ## Security
 
-The API endpoint (`https://api.zik.zarazaex.xyz`) is hardcoded at compile time to prevent unauthorized API usage. For development, use the `ZIK_API_URL` environment variable.
+The API endpoint (`https://zik-api.zarazaex.xyz`) is hardcoded at compile time to prevent unauthorized API usage. For development, use the `ZIK_API_URL` environment variable.
 
 ## License
 

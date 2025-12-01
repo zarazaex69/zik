@@ -6,7 +6,7 @@ import "os"
 // to unauthorized servers. This ensures all requests go through the official ZIK API.
 const (
 	// DefaultAPIEndpoint is the production API endpoint that cannot be overridden by users
-	DefaultAPIEndpoint = "https://api.zik.zarazaex.xyz"
+	DefaultAPIEndpoint = "https://zik-api.zarazaex.xyz"
 
 	// DefaultModel is the default AI model to use for requests
 	DefaultModel = "GLM-4-6-API-V1"

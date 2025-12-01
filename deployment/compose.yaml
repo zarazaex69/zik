@@ -41,7 +41,7 @@ services:
       - "127.0.0.1:8805:8805"
     environment:
       - PORT=8805
-      - API_URL=https://api.zik.zarazaex.xyz
+      - API_URL=https://zik-api.zarazaex.xyz
     networks:
       - server-net
     depends_on:

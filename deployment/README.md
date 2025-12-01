@@ -61,7 +61,7 @@ services:
       - "127.0.0.1:8805:8805"
     environment:
       - PORT=8805
-      - API_URL=https://api.zik.zarazaex.xyz
+      - API_URL=https://zik-api.zarazaex.xyz
     networks:
       - server-net
     depends_on:
@@ -84,7 +84,7 @@ docker compose up -d
 Your existing Cloudflare Tunnel already handles routing. Add these routes in Cloudflare dashboard:
 
 1. **API Server**:
-   - Hostname: `api.zik.zarazaex.xyz`
+   - Hostname: `zik-api.zarazaex.xyz`
    - Service: `http://localhost:8804`
    - Path: `*`
 
@@ -198,8 +198,8 @@ docker compose restart zik-server
 ### Web UI Can't Connect to API
 
 1. Verify API is running: `curl http://localhost:8804/health`
-2. Check environment variable: `API_URL=https://api.zik.zarazaex.xyz`
-3. Verify Cloudflare route for `api.zik.zarazaex.xyz`
+2. Check environment variable: `API_URL=https://zik-api.zarazaex.xyz`
+3. Verify Cloudflare route for `zik-api.zarazaex.xyz`
 
 ### Cloudflare Tunnel Issues
 
@@ -208,7 +208,7 @@ docker compose restart zik-server
 docker compose logs cloudflared
 
 # Verify routes in Cloudflare dashboard
-# Ensure api.zik.zarazaex.xyz -> localhost:8804
+# Ensure zik-api.zarazaex.xyz -> localhost:8804
 # Ensure zik.zarazaex.xyz -> localhost:8805
 ```
 
@@ -242,6 +242,6 @@ docker compose up -d --build zik-server zik-web
 - [ ] Configure Cloudflare routes
 - [ ] Build and start containers
 - [ ] Verify health checks
-- [ ] Test API: `curl https://api.zik.zarazaex.xyz/health`
+- [ ] Test API: `curl https://zik-api.zarazaex.xyz/health`
 - [ ] Test Web UI: `curl https://zik.zarazaex.xyz/`
 - [ ] Monitor logs for errors
