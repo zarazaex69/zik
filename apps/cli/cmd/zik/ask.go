@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/zarazaex69/zik/apps/cli/internal/ai"
 	"github.com/zarazaex69/zik/apps/cli/internal/config"
+	"github.com/zarazaex69/zik/apps/cli/internal/prompt"
 	"github.com/zarazaex69/zik/apps/cli/internal/render"
 )
 
@@ -44,7 +45,9 @@ func runAsk(cmd *cobra.Command, args []string) error {
 	aiClient := ai.NewClient(cfg)
 	ctx := context.Background()
 
+	// Build messages with system prompt to constrain formatting
 	messages := []ai.Message{
+		{Role: "system", Content: prompt.AskSystemPrompt()},
 		{Role: "user", Content: question},
 	}
 
