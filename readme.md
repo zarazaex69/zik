@@ -25,7 +25,6 @@ ZIK is a comprehensive AI toolkit designed for developers, providing seamless ac
 
 - **CLI Tool** - Generate commit messages, ask questions, analyze code
 - **API Server** - OpenAI-compatible API powered by GLM-4.6
-- **Web UI** - Interactive interface for API exploration
 - **Free & Unlimited** - No API keys required
 - **Streaming Support** - Real-time SSE responses
 - **Cross-Platform** - Linux, macOS, Windows support
